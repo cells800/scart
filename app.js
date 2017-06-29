@@ -15,15 +15,13 @@ var MongoStore = require('connect-mongo')(session);
 
 var routes = require('./routes/index');
 var userRoutes = require('./routes/user');
+//var checkoutRoutes = require('./routes/ctlerCheckout');
+//var chargeRoutes = require('./routes/charge');
 
 var app = express();
 // stripe payment required
 const keyPublishable = "pk_iA4yhIvVYDbQXSX3qNy4ioAL1HQIU";
 const keySecret = "Bdjh057jOSfL4bfhe12zNqlaAKKQAYiC";
-
-//const keyPublishable = process.env.PUBLISHABLE_KEY;
-//const keySecret = process.env.SECRET_KEY;
-
 const stripe = require("stripe")(keySecret);
 // stripe payment required
 
@@ -48,7 +46,7 @@ app.use(session({
   //each connection is new
   store: new MongoStore({ mongooseConnection: mongoose.connection }),
   // cookie time: minute x sec * msec
-  cooke: { maxAge: 180 * 60 * 1000}
+  cookie: { maxAge: 180 * 60 * 1000}
 }));
 app.use(flash());
 app.use(passport.initialize());
@@ -62,34 +60,8 @@ app.use(function(req, res, next){
   next();
 });
 
-// Stripe routes starts
-//app.get("/", (req, res) =>
-//  res.render("/shop/index.hbs", {keyPublishable}));
-
-app.use('/', routes );
-
-app.post("/shop/charge.hbs", (req, res) => {
-  var amount = 500;
-
-  stripe.customers.create({
-     email: req.body.stripeEmail,
-    source: req.body.stripeToken
-  })
-  .then(customer =>
-    stripe.charges.create({
-      amount,
-      description: "SS Sample Charge",
-         currency: "USD",
-         customer: customer.id
-    }))
-  .then(charge => res.render("charge.pug"));
-});
-
-//app.listen(4567);
-
-// Stripe routes end
-
-
+//app.use('/charge', chargeRoutes);
+//app.use('/checkout', checkoutRoutes);
 app.use('/user', userRoutes);
 app.use('/', routes);
 
@@ -110,6 +82,5 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
 
 module.exports = app;

@@ -1,5 +1,5 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'start' ]
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'start', '--debug' ]
 2 info using npm@2.15.11
 3 info using node@v4.8.0
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
@@ -19,8 +19,8 @@
 9 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:222:5)
 10 verbose pkgid shopping-cart@0.0.0
 11 verbose cwd /home/simon/shopping-cart/routes
-12 error Linux 4.4.0-79-generic
-13 error argv "/usr/bin/nodejs" "/usr/bin/npm" "start"
+12 error Linux 4.4.0-81-generic
+13 error argv "/usr/bin/nodejs" "/usr/bin/npm" "start" "--debug"
 14 error node v4.8.0
 15 error npm  v2.15.11
 16 error code ELIFECYCLE

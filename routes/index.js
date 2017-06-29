@@ -3,6 +3,7 @@ var router = express.Router();
 var Cart = require('../models/cart');
 
 var Product = require('../models/product');
+var Order = require('../models/order');
 
 // GET home page
 router.get('/', function(req, res, next) {
@@ -50,13 +51,13 @@ router.get('/shopping-cart', function(req,res,next) {
 
 router.get('/checkout', function(req,res,next) {
 
-  var errMsg = ' ';
-
   if(!req.session.cart){
     return res.redirect('shop/shopping-cart');
   }
   var cart = new Cart(req.session.cart);
-  res.render('shop/checkout',{total: cart.totalPrice, 
+  var errMsg = req.flash('error')[0];
+
+  res.render('shop/checkout',{total: cart.totalPrice*100,
     errMsg: errMsg, noError: !errMsg});
 });
 
@@ -65,14 +66,12 @@ router.post('/checkout', function(req, res, next) {
     return res.render('shop/shopping-cart');
   }
   var cart = new Cart(req.session.cart);
+  var errMsg = req.flash('error')[0];
 
   var stripe = require("stripe")("Bdjh057jOSfL4bfhe12zNqlaAKKQAYiC");
 
   // Copy from Stripe start
-
-  // Token is created using Stripe.js or Checkout!
-  // Get the payment token submitted by the form:
-  var token = request.body.stripeToken; // Using Express
+   var token = req.body.stripeToken; // Using Express
 
   // Charge the user's card:
   var charge = stripe.charges.create({
@@ -80,16 +79,25 @@ router.post('/checkout', function(req, res, next) {
     currency: "usd",
     description: "Example charge",
     source: token,
-  }, function(err, charge) {
+   }, function(err, charge) {
     // Display error and successful charges
     if (err) {
       req.flash('error',err.message);
       return res.redirect('/checkout');
     }
-    req.flash('success', 'Successfully bouth product!');
-    req.session.cart = null;
-    res.redirect('/');
-  });
+    var order = new Order({
+        user: req.user,
+        cart: cart,
+        address: req.body.address,
+        name: req.body.name,
+        paymentId: charge.id
+    });
+
+      req.flash('success', 'Successfully bought product!');
+      req.session.cart = null;
+      res.redirect('/');
+    });
+
   // Copy from Stripe end
 });
 

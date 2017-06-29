@@ -50,7 +50,7 @@ router.get('/shopping-cart', function(req,res,next) {
 
 router.get('/checkout', function(req,res,next) {
 
-  var errMsg = 'Error !!!';
+  var errMsg = ' ';
 
   if(!req.session.cart){
     return res.redirect('shop/shopping-cart');
@@ -88,7 +88,7 @@ router.post('/checkout', function(req, res, next) {
     }
     req.flash('success', 'Successfully bouth product!');
     req.session.cart = null;
-    req.redirect('/');
+    res.redirect('/');
   });
   // Copy from Stripe end
 });
